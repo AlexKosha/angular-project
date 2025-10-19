@@ -1,0 +1,27 @@
+.container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 200px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.content {
+  padding: 20px;
+}
+
+.side-bar-title {
+  padding: 16px;
+}
+
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
