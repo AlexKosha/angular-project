@@ -39,7 +39,7 @@ export class GenerateAnswerModal implements OnInit {
     this.isLoading = true;
     // Simulate an API call or any asynchronous operation
     this.openApi
-      .generateAnswerForQuestion(this.data.question)
+      .askQuestion(this.data.question)
       .pipe(
         catchError((err) => {
           console.warn(err);

@@ -8,22 +8,18 @@ import { QuestionItem } from '../components/category/category.config';
   providedIn: 'root',
 })
 export class CategoriesService {
-  public baseUrl = 'http://localhost:3000';
+  public baseUrl = 'https://angular-back-9esj.onrender.com';
 
   constructor(private http: HttpClient) {}
 
   getQuestionsByCategory(categoryName: string): Observable<ResponseArray<QuestionItem>> {
-    return this.http
-      .get<ResponseArray<QuestionItem>>(`${this.baseUrl}/category/${categoryName}`)
-      .pipe(
-        map((res: any) => {
-          return { data: res[0]?.questions || [] };
-        }),
-        delay(500)
-      );
+    return this.http.get<QuestionItem[]>(`${this.baseUrl}/categories/${categoryName}`).pipe(
+      map((questions) => ({ data: questions })), // просто повертаємо масив як data
+      delay(500)
+    );
   }
 
   deleteCategoryQuestionById(id: number): Observable<Response<QuestionItem>> {
-    return this.http.delete<Response<QuestionItem>>(`${this.baseUrl}/questions/${id}`);
+    return this.http.delete<Response<QuestionItem>>(`${this.baseUrl}/category/${id}`);
   }
 }

@@ -8,27 +8,23 @@ import { Response, ResponseArray } from '../model/response';
   providedIn: 'root',
 })
 export class PreparationService {
-  public baseUrl = 'http://localhost:3000';
+  public baseUrl = 'https://angular-back-9esj.onrender.com';
 
   constructor(private http: HttpClient) {}
 
   getPreparationQuestionsByCategory(categoryName: string): Observable<ResponseArray<QuestionItem>> {
-    return this.http
-      .get<ResponseArray<QuestionItem>>(`${this.baseUrl}/preparation/${categoryName}`)
-      .pipe(
-        map((res: any) => {
-          return { data: res[0]?.questions || [] };
-        }),
-        delay(500)
-      );
+    return this.http.get<QuestionItem[]>(`${this.baseUrl}/categories/${categoryName}`).pipe(
+      map((questions) => ({ data: questions })), // просто повертаємо масив як data
+      delay(500)
+    );
   }
 
   updatePreparationQuestionById(
     question: Partial<QuestionItem>,
     id: number
   ): Observable<Response<QuestionItem>> {
-    return this.http.patch<Response<QuestionItem>>(`${this.baseUrl}/questions/${id}`, {
-      ...question,
+    return this.http.put<Response<QuestionItem>>(`${this.baseUrl}/categories/questions/${id}`, {
+      answer: question.answer,
     });
   }
 
