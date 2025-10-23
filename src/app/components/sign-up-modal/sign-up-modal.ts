@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { SignUpService } from '../../services/sign-up';
+import { StorageService } from '../../services/storage';
 
 @Component({
   selector: 'app-sign-up-modal',
@@ -19,7 +20,8 @@ export class SignUpModal {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<SignUpModal>,
-    public signUpService: SignUpService
+    public signUpService: SignUpService,
+    private storageService: StorageService
   ) {
     this.signUpForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -32,8 +34,22 @@ export class SignUpModal {
   onSubmit() {
     if (this.signUpForm.valid) {
       const { email, password, firstName, lastName } = this.signUpForm.value;
-      this.signUpService.register(email, password, firstName, lastName).subscribe(() => {
-        this.dialogRef.close(this.signUpForm.value);
+      this.signUpService.register(email, password).subscribe({
+        next: (userCredential) => {
+          // встановлюємо токен у storage
+          userCredential.user.getIdToken().then((token) => {
+            this.storageService.setToken(token);
+            alert('Реєстрація успішна!');
+
+            // тут можна додати firstName та lastName у Firestore:
+            // this.userService.createProfile(userCredential.user.uid, firstName, lastName)
+
+            this.dialogRef.close(this.signUpForm.value);
+          });
+        },
+        error: (err) => {
+          alert(`Помилка: ${err.message}`);
+        },
       });
     }
   }

@@ -1,27 +1,13 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { StorageService } from './storage';
-import { Observable, of, tap } from 'rxjs';
-import { UserLoginResponse } from '../model/response';
+import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { from } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class SignInService {
-  private apiUrl = 'http://localhost:3000';
+  constructor(private auth: Auth) {}
 
-  constructor(private http: HttpClient, private storageService: StorageService) {}
-
-  login(email: string, password: string): Observable<UserLoginResponse> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const body = JSON.stringify({ email, password });
-
-    return this.http.post<UserLoginResponse>(`${this.apiUrl}/login`, body, { headers }).pipe(
-      tap((response) => {
-        if (response.accessToken) {
-          this.storageService.setToken(response.accessToken);
-        }
-      })
-    );
+  login(email: string, password: string) {
+    // перетворюємо Promise у Observable, щоб підписка працювала у компоненті
+    return from(signInWithEmailAndPassword(this.auth, email, password));
   }
 }

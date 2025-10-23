@@ -1,37 +1,13 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { StorageService } from './storage';
-import { Observable, tap } from 'rxjs';
-import { UserRegisterResponse } from '../model/response';
+import { Injectable, NgZone } from '@angular/core';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { from, switchMap } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class SignUpService {
-  private apiUrl = 'http://localhost:3000';
+  constructor(private auth: Auth, private firestore: Firestore, private zone: NgZone) {}
 
-  constructor(private http: HttpClient, private storageService: StorageService) {}
-
-  register(
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ): Observable<UserRegisterResponse> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const body = JSON.stringify({
-      email,
-      password,
-      firstName,
-      lastName,
-    });
-
-    return this.http.post<UserRegisterResponse>(`${this.apiUrl}/register`, body, { headers }).pipe(
-      tap((response) => {
-        if (response.accessToken) {
-          this.storageService.setToken(response.accessToken);
-        }
-      })
-    );
+  register(email: string, password: string) {
+    return from(this.zone.run(() => createUserWithEmailAndPassword(this.auth, email, password)));
   }
 }

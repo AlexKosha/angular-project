@@ -8,7 +8,7 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private storageService: StorageService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.storageService.getToken();
+    const token = localStorage.getItem('token');
 
     if (token && !req.url.includes('openai')) {
       const cloned = req.clone({

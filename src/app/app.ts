@@ -6,13 +6,28 @@ import { LeftSideMenu } from './components/left-side-menu/left-side-menu';
 import { UserPanel } from './components/user-panel/user-panel';
 import { Preparation } from './components/preparation/preparation';
 import { TopMenu } from './components/top-menu/top-menu';
+import { map, Observable } from 'rxjs';
+import { StorageService } from './services/storage';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatSidenavModule, MatToolbarModule, LeftSideMenu, UserPanel, TopMenu],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    MatSidenavModule,
+    MatToolbarModule,
+    LeftSideMenu,
+    UserPanel,
+    TopMenu,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
-  protected readonly title = signal('ProjectAngular');
+  isLoggedIn$: Observable<boolean>;
+
+  constructor(private storageService: StorageService) {
+    this.isLoggedIn$ = this.storageService.getTokenObservable().pipe(map((token) => !!token));
+  }
 }

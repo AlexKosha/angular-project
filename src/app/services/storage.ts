@@ -1,33 +1,33 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class StorageService {
-  private readonly TOKEN_KEY = 'authToken';
-  private tokenSubject: BehaviorSubject<string | null>;
+  private tokenSubject = new BehaviorSubject<string | null>(null);
 
   constructor() {
-    const token = localStorage.getItem(this.TOKEN_KEY);
-    this.tokenSubject = new BehaviorSubject<string | null>(token);
+    // при старті перевіряємо, чи є токен у localStorage
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      this.tokenSubject.next(savedToken);
+    }
   }
 
-  setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+  setToken(token: string) {
+    localStorage.setItem('token', token);
     this.tokenSubject.next(token);
-  }
-
-  getToken(): string | null {
-    return this.tokenSubject.value;
   }
 
   getTokenObservable(): Observable<string | null> {
     return this.tokenSubject.asObservable();
   }
 
-  removeToken(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+  getToken(): string | null {
+    return this.tokenSubject.value; // зручно для інтерцептора або синхронних перевірок
+  }
+
+  removeToken() {
+    localStorage.removeItem('token');
     this.tokenSubject.next(null);
   }
 }

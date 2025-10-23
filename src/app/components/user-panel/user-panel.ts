@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { SignInModal } from '../sign-in-modal/sign-in-modal';
 import { SignUpModal } from '../sign-up-modal/sign-up-modal';
@@ -20,14 +21,16 @@ import { jwtDecode } from 'jwt-decode';
 export class UserPanel implements OnInit {
   user$: Observable<{ email: string } | null>;
 
-  constructor(private dialog: MatDialog, private storageService: StorageService) {
+  constructor(
+    private dialog: MatDialog,
+    private storageService: StorageService,
+    private router: Router // 👈 додаємо router
+  ) {
     this.user$ = this.storageService.getTokenObservable().pipe(
       map((token) => {
         if (token) {
-          const parsedPoken = jwtDecode(token) as any;
-          return {
-            email: parsedPoken?.email,
-          };
+          const parsedToken = jwtDecode(token) as any;
+          return { email: parsedToken?.email };
         } else {
           return null;
         }
@@ -39,6 +42,7 @@ export class UserPanel implements OnInit {
 
   signOut(): void {
     this.storageService.removeToken();
+    this.router.navigate(['/']); // 👈 повертає на головну сторінку
   }
 
   openSignInModal(): void {

@@ -1,17 +1,18 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { CommonModule } from '@angular/common';
 import { SignInService } from '../../services/sign-in';
+import { StorageService } from '../../services/storage';
 
 @Component({
   selector: 'app-sign-in-modal',
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatInputModule, ReactiveFormsModule],
   templateUrl: './sign-in-modal.html',
-  styleUrl: './sign-in-modal.scss',
+  styleUrls: ['./sign-in-modal.scss'],
 })
 export class SignInModal {
   signInForm: FormGroup;
@@ -19,7 +20,8 @@ export class SignInModal {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<SignInModal>,
-    public signInService: SignInService
+    private signInService: SignInService,
+    private storageService: StorageService
   ) {
     this.signInForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -30,10 +32,19 @@ export class SignInModal {
   onSubmit() {
     if (this.signInForm.valid) {
       const { email, password } = this.signInForm.value;
-      console.log('Email:', email);
-      console.log('Password:', password);
-      this.signInService.login(email, password).subscribe(() => {
-        this.dialogRef.close(this.signInForm.value);
+
+      this.signInService.login(email, password).subscribe({
+        next: (userCredential) => {
+          // Отримуємо JWT токен
+          userCredential.user.getIdToken().then((token) => {
+            this.storageService.setToken(token); // Зберігаємо токен
+            alert('Login successful ✅');
+            this.dialogRef.close();
+          });
+        },
+        error: (err) => {
+          alert(`Login error: ${err.message}`);
+        },
       });
     }
   }
