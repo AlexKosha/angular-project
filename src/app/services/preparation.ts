@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, delay, map, of } from 'rxjs';
-import { MOCK_DATA, QuestionItem } from '../components/category/category.config';
-import { get } from 'lodash';
+import { QuestionItem } from '../components/category/category.config';
 import { Response, ResponseArray } from '../model/response';
 
 @Injectable({

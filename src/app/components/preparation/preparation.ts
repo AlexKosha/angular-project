@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MOCK_DATA, QuestionItem } from '../category/category.config';
+import { QuestionItem } from '../category/category.config';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmationModal } from '../delete-confirmation-modal/delete-confirmation-modal';
 import { GenerateAnswerModal } from '../generete-answer-modal/generete-answer-modal';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { get } from 'lodash';
 import { PreparationService } from '../../services/preparation';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
